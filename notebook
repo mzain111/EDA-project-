@@ -1,0 +1,66 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.filterwarnings('ignore')
+
+# Import custom modules
+import sys
+sys.path.append('..')
+from filters import load_data, clean_data
+from charts import *
+
+plt.style.use('dark_background')
+print('Libraries loaded successfully!')
+df_raw = load_data('../data/ethereum.csv')
+df = clean_data(df_raw)
+print(f'Shape: {df.shape}')
+df.head()
+df.info()
+num_cols = ['price','open','high','low','total_volume','market_cap','price_change_pct']
+df[num_cols].describe().round(2)
+missing = df.isnull().sum()
+print('Missing values per column:')
+print(missing[missing > 0] if missing.any() else 'No missing values found!')
+# Chart 1 — Pie
+fig = chart_pie_direction(df)
+plt.show()
+# Chart 2 — Histogram
+fig = chart_histogram_price(df)
+plt.show()
+# Chart 3 — Line
+fig = chart_line_price_trend(df)
+plt.show()
+# Chart 4 — Bar
+fig = chart_bar_monthly_avg(df)
+plt.show()
+# Chart 5 — Scatter
+fig = chart_scatter_price_volume(df)
+plt.show()
+# Chart 6 — Box Plot
+fig = chart_box_price_by_quarter(df)
+plt.show()
+# Chart 7 — Heatmap
+fig = chart_heatmap_correlation(df)
+plt.show()
+# Chart 8 — Area Chart
+fig = chart_area_market_cap(df)
+plt.show()
+# Chart 9 — Count Plot
+fig = chart_count_day_of_week(df)
+plt.show()
+# Chart 10 — Violin Plot
+fig = chart_violin_price_quarter(df)
+plt.show()
+print('=== KEY INSIGHTS FROM ETH DATASET ===')
+print(f"Date Range: {df['date'].min().date()} to {df['date'].max().date()}")
+print(f"Total Trading Days: {len(df)}")
+print(f"Average Price: ${df['price'].mean():,.2f}")
+print(f"Highest Price: ${df['price'].max():,.2f}")
+print(f"Lowest Price:  ${df['price'].min():,.2f}")
+print(f"Total Return:  {((df['price'].iloc[-1]-df['price'].iloc[0])/df['price'].iloc[0]*100):.2f}%")
+print(f"Bullish Days:  {(df['price_direction']=='Bullish').sum()}")
+print(f"Bearish Days:  {(df['price_direction']=='Bearish').sum()}")
+print(f"Price-Volume Correlation: {df['price'].corr(df['total_volume']):.4f}")
+print(f"Price-MarketCap Corr:    {df['price'].corr(df['market_cap']):.4f}")
